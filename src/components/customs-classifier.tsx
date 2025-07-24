@@ -19,7 +19,7 @@ import { SidebarProvider, Sidebar, SidebarHeader, SidebarContent, SidebarInset, 
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger, AlertDialogFooter } from "@/components/ui/alert-dialog";
 
 const formSchema = z.object({
-  brand: z.string().min(1, 'La marca es obligatoria.'),
+  brand: z.string(),
   description: z.string().min(10, 'La descripción debe tener al menos 10 caracteres.'),
 });
 
@@ -161,7 +161,7 @@ export function CustomsClassifier() {
                             className="h-auto whitespace-normal py-2"
                         >
                             <div className="flex flex-col items-start gap-1 w-full">
-                                <span className="font-semibold text-primary">{item.brand}</span>
+                                <span className="font-semibold text-primary">{item.brand || 'Sin Marca'}</span>
                                 <span className="text-xs text-muted-foreground truncate w-full">{item.description}</span>
                             </div>
                         </SidebarMenuButton>
@@ -188,7 +188,7 @@ export function CustomsClassifier() {
                             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                                 <FormField control={form.control} name="brand" render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Marca</FormLabel>
+                                        <FormLabel>Marca (Opcional)</FormLabel>
                                         <FormControl><Input placeholder="ej. QuantumLeap" {...field} /></FormControl>
                                         <FormMessage />
                                     </FormItem>

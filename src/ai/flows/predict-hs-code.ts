@@ -12,7 +12,7 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const PredictHsCodeInputSchema = z.object({
-  brand: z.string().describe('The brand of the product.'),
+  brand: z.string().describe('The brand of the product. Can be empty.'),
   description: z.string().describe('A detailed description of the product.'),
 });
 export type PredictHsCodeInput = z.infer<typeof PredictHsCodeInputSchema>;
@@ -35,7 +35,7 @@ const prompt = ai.definePrompt({
 
   Dada la siguiente marca y descripción del producto, predice la clasificación del código HS más apropiada y proporciona una breve explicación que justifique tu predicción.
 
-  Marca: {{{brand}}}
+  {{#if brand}}Marca: {{{brand}}}{{else}}Marca: No especificada{{/if}}
   Descripción: {{{description}}}
 
   Responde con un objeto JSON:

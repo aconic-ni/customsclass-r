@@ -12,7 +12,7 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const ExplainHsCodeInputSchema = z.object({
-  brand: z.string().describe('The brand of the product.'),
+  brand: z.string().describe('The brand of the product. Can be empty.'),
   productDescription: z.string().describe('A detailed description of the product.'),
   hsCode: z.string().describe('The predicted HS code for the product.'),
 });
@@ -35,7 +35,7 @@ const prompt = ai.definePrompt({
 
   Dada la siguiente información del producto y el código HS predicho, proporciona una breve explicación que justifique la clasificación. La explicación debe ser fácil de entender y tener un tono ligeramente retro y anticuado, como si estuviera impresa en un catálogo antiguo.
 
-  Marca: {{{brand}}}
+  {{#if brand}}Marca: {{{brand}}}{{else}}Marca: No especificada{{/if}}
   Descripción del producto: {{{productDescription}}}
   Código HS: {{{hsCode}}}
 

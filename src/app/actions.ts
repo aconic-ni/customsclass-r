@@ -5,7 +5,7 @@ import { explainHsCode, type ExplainHsCodeOutput } from '@/ai/flows/explain-hs-c
 import { z } from 'zod';
 
 const formSchema = z.object({
-  brand: z.string().min(1, 'La marca es obligatoria.'),
+  brand: z.string(),
   description: z.string().min(10, 'La descripción debe tener al menos 10 caracteres.'),
 });
 
