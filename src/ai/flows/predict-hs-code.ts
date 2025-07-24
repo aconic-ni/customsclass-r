@@ -31,17 +31,17 @@ const prompt = ai.definePrompt({
   name: 'predictHsCodePrompt',
   input: {schema: PredictHsCodeInputSchema},
   output: {schema: PredictHsCodeOutputSchema},
-  prompt: `You are an AI assistant specialized in predicting the Harmonized System (HS) code for products based on their brand and description.
+  prompt: `Eres un asistente de IA especializado en predecir el código del Sistema Armonizado (HS) para productos basándose en su marca y descripción.
 
-  Given the following brand and product description, predict the most appropriate HS code classification and provide a brief explanation justifying your prediction.
+  Dada la siguiente marca y descripción del producto, predice la clasificación del código HS más apropiada y proporciona una breve explicación que justifique tu predicción.
 
-  Brand: {{{brand}}}
-  Description: {{{description}}}
+  Marca: {{{brand}}}
+  Descripción: {{{description}}}
 
-  Respond with a JSON object:
+  Responde con un objeto JSON:
   {
-    "hsCode": "<predicted HS code>",
-    "explanation": "<brief explanation>"
+    "hsCode": "<código HS predicho>",
+    "explanation": "<breve explicación>"
   }`,
 });
 

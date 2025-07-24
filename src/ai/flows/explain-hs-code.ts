@@ -31,15 +31,15 @@ const prompt = ai.definePrompt({
   name: 'explainHsCodePrompt',
   input: {schema: ExplainHsCodeInputSchema},
   output: {schema: ExplainHsCodeOutputSchema},
-  prompt: `You are an AI assistant specialized in explaining HS code classifications in a retro style.
+  prompt: `Eres un asistente de IA especializado en explicar clasificaciones de códigos HS en un estilo retro.
 
-  Given the following product information and predicted HS code, provide a brief explanation justifying the classification. The explanation should be easy to understand and have a slightly retro, old-fashioned tone, as if it were printed in an old catalog.
+  Dada la siguiente información del producto y el código HS predicho, proporciona una breve explicación que justifique la clasificación. La explicación debe ser fácil de entender y tener un tono ligeramente retro y anticuado, como si estuviera impresa en un catálogo antiguo.
 
-  Brand: {{{brand}}}
-  Product Description: {{{productDescription}}}
-  HS Code: {{{hsCode}}}
+  Marca: {{{brand}}}
+  Descripción del producto: {{{productDescription}}}
+  Código HS: {{{hsCode}}}
 
-  Explanation:`,
+  Explicación:`,
 });
 
 const explainHsCodeFlow = ai.defineFlow(

@@ -5,8 +5,8 @@ import { explainHsCode, type ExplainHsCodeOutput } from '@/ai/flows/explain-hs-c
 import { z } from 'zod';
 
 const formSchema = z.object({
-  brand: z.string().min(1, 'Brand is required.'),
-  description: z.string().min(10, 'Description must be at least 10 characters long.'),
+  brand: z.string().min(1, 'La marca es obligatoria.'),
+  description: z.string().min(10, 'La descripción debe tener al menos 10 caracteres.'),
 });
 
 export type ResultData = {
@@ -43,6 +43,6 @@ export async function getHsCodePrediction(data: PredictHsCodeInput): Promise<Act
     return { success: true, data: { prediction, explanation } };
   } catch (e) {
     console.error(e);
-    return { success: false, error: 'An unexpected error occurred. Please try again.' };
+    return { success: false, error: 'Ocurrió un error inesperado. Por favor, inténtalo de nuevo.' };
   }
 }
