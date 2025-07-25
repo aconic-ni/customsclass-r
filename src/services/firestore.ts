@@ -2,7 +2,8 @@
 
 import { db } from '@/lib/firebase';
 import { collection, addDoc, query, where, getDocs, serverTimestamp, orderBy, writeBatch } from 'firebase/firestore';
-import type { ResultData, HistoryItem } from '@/components/customs-classifier';
+import type { ResultData } from '@/app/actions';
+import type { HistoryItem } from '@/components/customs-classifier';
 
 interface HistoryData {
     userId: string;

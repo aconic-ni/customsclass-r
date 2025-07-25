@@ -61,7 +61,9 @@ export function CustomsClassifier() {
   };
   
   useEffect(() => {
-    fetchHistory();
+    if(user) {
+        fetchHistory();
+    }
   }, [user]);
   
   const onSubmit = async (data: FormData) => {
@@ -83,7 +85,12 @@ export function CustomsClassifier() {
       // A more robust way might involve getting the new item's ID from the server action.
       setTimeout(() => {
         if(history.length > 0) {
-            setActiveHistoryId(history[0].id);
+            const newHistory = getHistory(user.uid);
+            newHistory.then(h => {
+              if (h.length > 0) {
+                setActiveHistoryId(h[0].id);
+              }
+            })
         }
       }, 500);
 
