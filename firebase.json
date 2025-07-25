@@ -1,6 +1,5 @@
 {
   "hosting": {
-    "site": "customsclass-r-6a2cf",
     "public": "out",
     "ignore": [
       "firebase.json",
