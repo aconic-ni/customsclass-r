@@ -1,5 +1,5 @@
-import { CustomsClassifier } from '@/components/customs-classifier';
+import { Login } from '@/components/login';
 
 export default function Home() {
-  return <CustomsClassifier />;
+  return <Login />;
 }
