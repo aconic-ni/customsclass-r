@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -13,6 +14,8 @@ import {
   signInWithPopup,
   signOut,
   User,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 
@@ -20,6 +23,8 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   signInWithGoogle: () => Promise<void>;
+  signUpWithEmail: (email: string, password: string) => Promise<void>;
+  signInWithEmail: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -48,6 +53,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const signUpWithEmail = async (email: string, password: string) => {
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+    } catch (error) {
+      console.error('Error signing up with email', error);
+      throw error;
+    }
+  };
+
+  const signInWithEmail = async (email: string, password: string) => {
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (error) {
+      console.error('Error signing in with email', error);
+      throw error;
+    }
+  };
+
   const logout = async () => {
     try {
       await signOut(auth);
@@ -57,7 +80,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const value = { user, loading, signInWithGoogle, logout };
+  const value = { user, loading, signInWithGoogle, signUpWithEmail, signInWithEmail, logout };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
