@@ -17,6 +17,8 @@ import { useToast } from "@/hooks/use-toast";
 import { getHsCodePrediction, type ResultData } from "@/app/actions";
 import { SidebarProvider, Sidebar, SidebarHeader, SidebarContent, SidebarInset, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger, AlertDialogFooter } from "@/components/ui/alert-dialog";
+import { useAuth } from "@/hooks/use-auth";
+import { getHistory, clearHistoryForUser } from "@/services/firestore";
 
 const formSchema = z.object({
   brand: z.string(),
@@ -24,55 +26,67 @@ const formSchema = z.object({
 });
 
 type FormData = z.infer<typeof formSchema>;
-type HistoryItem = FormData & { id: string; result: ResultData };
+export type HistoryItem = FormData & { id: string; result: ResultData };
 
 export function CustomsClassifier() {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [activeHistoryId, setActiveHistoryId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(true);
   const [result, setResult] = useState<ResultData | null>(null);
-  const [isMounted, setIsMounted] = useState(false);
-
+  
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: { brand: "", description: "" },
   });
-
-  useEffect(() => {
-    setIsMounted(true);
+  
+  const fetchHistory = async () => {
+    if (!user) return;
+    setIsLoadingHistory(true);
     try {
-      const storedHistory = localStorage.getItem("customsClassRHistory");
-      if (storedHistory) {
-        setHistory(JSON.parse(storedHistory));
-      }
+      const userHistory = await getHistory(user.uid);
+      setHistory(userHistory);
     } catch (error) {
-      console.error("Failed to load history from localStorage", error);
+      console.error("Failed to load history from Firestore", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "No se pudo cargar el historial.",
+      });
+    } finally {
+      setIsLoadingHistory(false);
     }
-  }, []);
-
+  };
+  
   useEffect(() => {
-    if (isMounted) {
-      try {
-        localStorage.setItem("customsClassRHistory", JSON.stringify(history));
-      } catch (error) {
-        console.error("Failed to save history to localStorage", error);
-      }
-    }
-  }, [history, isMounted]);
-
+    fetchHistory();
+  }, [user]);
+  
   const onSubmit = async (data: FormData) => {
+    if (!user) {
+      toast({ variant: "destructive", title: "Error", description: "Debes iniciar sesión para clasificar."});
+      return;
+    }
+
     setIsLoading(true);
     setResult(null);
     setActiveHistoryId(null);
-    const response = await getHsCodePrediction(data);
+    const response = await getHsCodePrediction({ ...data, userId: user.uid });
     setIsLoading(false);
 
     if (response.success) {
       setResult(response.data);
-      const newHistoryItem: HistoryItem = { id: new Date().toISOString(), ...data, result: response.data };
-      setHistory(prev => [newHistoryItem, ...prev]);
-      setActiveHistoryId(newHistoryItem.id);
+      await fetchHistory();
+      // Find the newly created history item to set it as active. This is a simple approach.
+      // A more robust way might involve getting the new item's ID from the server action.
+      setTimeout(() => {
+        if(history.length > 0) {
+            setActiveHistoryId(history[0].id);
+        }
+      }, 500);
+
     } else {
       toast({
         variant: "destructive",
@@ -104,7 +118,9 @@ export function CustomsClassifier() {
     toast({ title: "Historial Exportado", description: "Tu historial de interacciones ha sido descargado." });
   };
 
-  const handleClearHistory = () => {
+  const handleClearHistory = async () => {
+    if(!user) return;
+    await clearHistoryForUser(user.uid);
     setHistory([]);
     setResult(null);
     setActiveHistoryId(null);
@@ -150,10 +166,17 @@ export function CustomsClassifier() {
         </SidebarHeader>
         <SidebarContent className="p-0">
             <SidebarMenu className="p-2">
-                {isMounted && history.length === 0 && (
+                {isLoadingHistory && (
+                  <div className="p-2 space-y-2">
+                    <Skeleton className="h-12 w-full" />
+                    <Skeleton className="h-12 w-full" />
+                    <Skeleton className="h-12 w-full" />
+                  </div>
+                )}
+                {!isLoadingHistory && history.length === 0 && (
                     <div className="text-center text-muted-foreground p-4 text-sm">Aún no hay interacciones.</div>
                 )}
-                {isMounted && history.map((item) => (
+                {!isLoadingHistory && history.map((item) => (
                     <SidebarMenuItem key={item.id}>
                         <SidebarMenuButton 
                             onClick={() => handleHistorySelect(item)} 
